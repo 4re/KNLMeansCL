@@ -1,26 +1,34 @@
-language: cpp
+sudo: false
 
+os:
+  - linux
+
+language: 
+  - cpp
+
+services:
+  - docker
+  
 branches:
   only: 
   - master
   
 before_install:
-- sudo add-apt-repository "deb http://ppa.launchpad.net/djcj/vapoursynth/ubuntu trusty main" -y
-- sudo add-apt-repository "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main" -y
-- sudo apt-get update -qq
-- sudo apt-get install --allow-unauthenticated g++-5
-- sudo mv /etc/default/rcS /etc/default/rcS.backup
-  
-install:
-- sudo apt-get install opencl-headers ocl-icd-libopencl1 ocl-icd-opencl-dev python3-pip
-- sudo apt-get install --allow-unauthenticated libvapoursynth-dev
-- mkdir build && export PATH="`pwd`/build:${PATH}"
-- wget https://github.com/ninja-build/ninja/releases/download/v1.7.2/ninja-linux.zip && unzip -q ninja-linux.zip -d build
-- sudo pip3 install meson==0.44
+  - docker pull 4re/KNLMeansCL:bionic
 
-script: 
-- CC=/usr/bin/g++-5.4.1 meson build
-- ninja -v -C build
+install: 
+  - docker exec -t ubuntu-bionic bash -c "
+  apt-get update -qq;
+  apt-get install meson ocl-icd-opencl-dev software-properties-common -y;
+  add-apt-repository ppa:djcj/vapoursynth -y;
+  apt-get update -qq;
+  apt-get install libvapoursynth-dev -y"
+
+script:
+  - echo FROM 4re/KNLMeansCL:bionic > Dockerfile
+  - echo ADD . /root >> Dockerfile
+  - docker build -t withgit .
+  - docker run withgit /bin/sh -c "cd /root && TRAVIS=true CC=$CC CXX=$CXX meson builddir && ninja -C builddir test"
 
 notifications:
   email: false
