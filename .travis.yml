@@ -16,13 +16,11 @@ branches:
 before_install:
   - docker pull ubuntu:bionic
 
-install: 
-  - docker exec bash -c "apt-get update -qq; apt-get install meson ocl-icd-opencl-dev software-properties-common -y; add-apt-repository ppa:djcj/vapoursynth -y; apt-get update -qq; apt-get install libvapoursynth-dev -y"
-
 script:
   - echo FROM ubuntu:bionic > Dockerfile
   - echo ADD . /root >> Dockerfile
   - docker build -t withgit .
+  - docker exec -t withgit /bin/sh -c "apt-get update -qq; apt-get install meson ocl-icd-opencl-dev software-properties-common -y; add-apt-repository ppa:djcj/vapoursynth -y; apt-get update -qq; apt-get install libvapoursynth-dev -y"
   - docker run withgit /bin/sh -c "cd /root && TRAVIS=true CC=$CC CXX=$CXX meson builddir && ninja -C builddir test"
 
 notifications:
