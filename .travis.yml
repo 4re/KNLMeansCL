@@ -20,7 +20,7 @@ script:
   - echo FROM ubuntu:bionic > Dockerfile
   - echo ADD . /root >> Dockerfile
   - docker build -t withgit .
-  - docker run withgit /bin/sh -c "apt-get update -qq; apt-get install meson ocl-icd-opencl-dev software-properties-common -y; add-apt-repository ppa:djcj/vapoursynth -y; apt-get update -qq; apt-get install libvapoursynth-dev -y; cd /root && TRAVIS=true CC=$CC CXX=$CXX meson builddir && ninja -C builddir test"
+  - docker run withgit /bin/sh -c "apt-get update -qq; apt-get install meson ocl-icd-opencl-dev software-properties-common -y; add-apt-repository ppa:djcj/vapoursynth -y; apt-get update -qq; apt-get install libvapoursynth-dev -y; cd /root && TRAVIS=true meson builddir && ninja -C builddir"
 
 notifications:
   email: false
