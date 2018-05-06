@@ -1,6 +1,5 @@
 sudo: false
 
-
 os:
   - linux
 
@@ -16,20 +15,3 @@ branches:
   
 before_install:
   - docker pull 4re/KNLMeansCL:bionic
-
-install: 
-  - docker exec -t ubuntu-bionic bash -c "
-  apt-get update -qq;
-  apt-get install meson ocl-icd-opencl-dev software-properties-common -y;
-  add-apt-repository ppa:djcj/vapoursynth -y;
-  apt-get update -qq;
-  apt-get install libvapoursynth-dev -y"
-
-script:
-  - echo FROM 4re/KNLMeansCL:bionic > Dockerfile
-  - echo ADD . /root >> Dockerfile
-  - docker build -t withgit .
-  - docker run withgit /bin/sh -c "cd /root && TRAVIS=true CC=$CC CXX=$CXX meson builddir && ninja -C builddir test"
-
-notifications:
-  email: false
